@@ -53,7 +53,6 @@ while porta <= 65535:
               for sock in sockets_abertos:
                  sock.close()
  
-              sockets_abertos = []
               sockets_abertos.clear()
             
         # Socket TCP
