@@ -20,6 +20,11 @@ porta = 1
 
 while porta <= 65535:
     try:
+        novo_ip = detectar_ip()
+
+        if novo_ip != ip:
+            ip = novo_ip
+            
         # Socket TCP
         sock_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
