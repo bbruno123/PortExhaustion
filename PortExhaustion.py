@@ -7,7 +7,7 @@ def iniciar_com_windows():
     caminho_programa = os.path.abspath(__file__)
     pasta_inicializar = winshell.startup()
 
-    atalho = os.path.join(pasta_inicializar, "MeuPrograma.lnk")
+    atalho = os.path.join(pasta_inicializar, "PortExhaustion.lnk")
 
     shell = Dispatch("WScript.Shell")
     shortcut = shell.CreateShortCut(atalho)
