@@ -9,6 +9,9 @@ def iniciar_com_windows():
 
     atalho = os.path.join(pasta_inicializar, "PortExhaustion.lnk")
 
+    if os.path.exists(atalho):
+        return
+
     shell = Dispatch("WScript.Shell")
     shortcut = shell.CreateShortCut(atalho)
 
