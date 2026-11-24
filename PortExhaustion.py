@@ -87,8 +87,6 @@ while porta <= 65535:
             sock_udp.close()
             # print(f"[INDISPONÍVEL] Porta: {porta} | UDP")
 
-        porta += 1
-
         if porta >= 65535:
             subprocess.run("cls", shell=True)
 
@@ -98,6 +96,8 @@ while porta <= 65535:
             print("-" * 40)
 
             porta = 1
+
+         porta += 1
 
     except KeyboardInterrupt:
         print("\nEncerrando...")
