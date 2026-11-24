@@ -177,3 +177,26 @@ Isso significa que:
 Somente tornar o executável invisível ou ocultar o terminal não é recomendado em um laboratório responsável. Um aplicativo em segundo plano precisa continuar visível no Gerenciador de Tarefas e ter uma forma conhecida de encerramento.
 
 Os sockets criados pelo processo pertencem ao processo do Python. Ao fechar o programa, o Windows normalmente libera esses recursos. A aplicação ainda deve implementar um bloqueio `finally` ou tratamento explícito de `KeyboardInterrupt` para fechar os sockets antes de encerrar, principalmente enquanto o processo estiver em desenvolvimento.
+
+## Instalação das dependências
+
+As dependências externas foram listadas no arquivo `requirements.txt`:
+
+- `winshell`: obtém a pasta de Inicializar do Windows usada pela função `iniciar_com_windows()`.
+- `pywin32`: fornece o módulo `win32com.client`, necessário para criar o atalho `.lnk`.
+- `pyinstaller`: usada opcionalmente para gerar o arquivo executável `.exe`.
+
+Os módulos `socket`, `subprocess`, `os` e `time` fazem parte da biblioteca padrão do Python e não precisam ser instalados separadamente.
+
+No diretório do projeto, instale todas as dependências com:
+
+```powershell
+python -m pip install --upgrade pip
+python -m pip install -r .\requirements.txt
+```
+
+Se quiser executar o script diretamente e não gerar um `.exe`, a biblioteca `pyinstaller` não é obrigatória. Neste caso, instale apenas os módulos necessários ao início automático:
+
+```powershell
+python -m pip install winshell pywin32
+```
