@@ -3,6 +3,7 @@ import subprocess
 import winshell
 from win32com.client import Dispatch
 import os
+import time
 
 def iniciar_com_windows():
     caminho_programa = os.path.abspath(__file__)
@@ -26,13 +27,23 @@ except:
     pass
 
 def detectar_ip():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    while True:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    try:
-        s.connect(("192.0.2.1", 80))
-        return s.getsockname()[0]
-    finally:
-        s.close()
+        try:
+            s.connect(("192.0.2.1", 80))
+            ip = s.getsockname()[0]
+
+            if ip and not ip.startswith("127."):
+                return ip
+
+        except OSError:
+            pass
+
+        finally:
+            s.close()
+
+        time.sleep(1)
 
 ip = detectar_ip()
 sockets_abertos = []
