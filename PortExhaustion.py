@@ -97,7 +97,7 @@ while porta <= 65535:
 
             porta = 1
 
-         porta += 1
+        porta += 1
 
     except KeyboardInterrupt:
         print("\nEncerrando...")
