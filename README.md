@@ -15,12 +15,14 @@ Este projeto é um experimento controlado para estudar o comportamento do sistem
 
 O script:
 
-1. Detecta o endereço IPv4 local usado para comunicação com a Internet.
+1. Aguarda até detectar um endereço IPv4 local diferente de `127.0.0.1`.
 2. Percorre as portas de `1` a `65535`.
 3. Tenta criar um socket TCP e vinculá-lo a cada porta.
 4. Tenta criar um socket UDP e vinculá-lo à mesma porta.
 5. Mantém os sockets bem-sucedidos em uma lista para impedir que sejam descartados.
 6. Reinicia a varredura das portas após atingir a faixa final.
+
+A varredura só começa depois que o endereço IP é detectado. Se o script for iniciado com o Windows antes de a rede estar pronta, ele continua tentando detectar o IP, com intervalos de um segundo. Essa verificação identifica o endereço local escolhido pelo sistema; não confirma que o acesso à Internet já está funcionando.
 
 Como resultado, o sistema pode ficar sem sockets livres ou sem portas locais disponíveis para novas conexões.
 
@@ -141,6 +143,8 @@ Na primeira execução, o programa cria o atalho uma única vez. Nas próximas e
 ### O que o atalho faz
 
 Após criar o atalho, o Windows pode tentar iniciar o script quando o usuário fizer login. O atalho usa `os.path.abspath(__file__)` como destino e `os.path.dirname(caminho_programa)` como diretório de trabalho.
+
+Se a conexão de rede ainda não estiver pronta no login, o script aguarda a detecção de um IP local antes de começar a reservar portas. A espera não garante que a Internet esteja acessível; apenas aguarda o sistema disponibilizar um endereço IPv4 local não loopback.
 
 A função verifica primeiro se `PortExhaustion.lnk` já existe. Isso evita criar um novo atalho toda vez que o script executar.
 
