@@ -48,6 +48,11 @@ while porta <= 65535:
            if novo_ip != ip:
               ip = novo_ip
               # print(f"IP atualizado: {ip}")
+
+              for sock in sockets_abertos:
+                 sock.close()
+
+              sockets_abertos.clear()
             
         # Socket TCP
         sock_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
