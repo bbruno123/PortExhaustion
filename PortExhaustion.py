@@ -2,6 +2,7 @@ import socket
 import subprocess
 import winshell
 from win32com.client import Dispatch
+import os
 
 def iniciar_com_windows():
     caminho_programa = os.path.abspath(__file__)
