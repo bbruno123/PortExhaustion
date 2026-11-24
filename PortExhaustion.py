@@ -42,10 +42,12 @@ porta = 1
 
 while porta <= 65535:
     try:
-        novo_ip = detectar_ip()
+        if porta % 100 == 0:
+           novo_ip = detectar_ip()
 
-        if novo_ip != ip:
-            ip = novo_ip
+           if novo_ip != ip:
+              ip = novo_ip
+              # print(f"IP atualizado: {ip}")
             
         # Socket TCP
         sock_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
