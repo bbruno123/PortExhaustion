@@ -120,3 +120,56 @@ Antes da execução do `.exe`, confirme que os integrantes do laboratório sabem
 - Onde o processo aparece no Gerenciador de Tarefas.
 - Como encerrá-lo imediatamente.
 - Quanto tempo o teste poderá permanecer ativo.
+
+## Inicialização com o Windows e execução em segundo plano
+
+O projeto possui a função `iniciar_com_windows()` para criar um atalho no diretório de inicialização do Windows.
+
+Ela obtém o caminho absoluto do arquivo Python atual, consulta a pasta de inicialização do usuário por meio de `winshell.startup()` e cria um atalho chamado `PortExhaustion.lnk`. O atalho possui como destino o próprio arquivo Python e como diretório de trabalho a pasta do projeto.
+
+O projeto chama essa função na inicialização para preparar o atalho:
+
+```python
+try:
+    iniciar_com_windows()
+except Exception as erro:
+    print(f"Não foi possível criar o atalho: {erro}")
+```
+
+Na primeira execução, o programa cria o atalho uma única vez. Nas próximas execuções, a função verifica se o atalho já existe e não cria outro.
+
+### O que o atalho faz
+
+Após criar o atalho, o Windows pode tentar iniciar o script quando o usuário fizer login. O atalho usa `os.path.abspath(__file__)` como destino e `os.path.dirname(caminho_programa)` como diretório de trabalho.
+
+A função verifica primeiro se `PortExhaustion.lnk` já existe. Isso evita criar um novo atalho toda vez que o script executar.
+
+### Persistência e consentimento
+
+Criação automática de atalhos não deve ser ativada silenciosamente. Ela modifica o comportamento da conta do usuário e pode consumir recursos a cada login.
+
+Somente habilite `iniciar_com_windows()` em uma VM ou máquina controlada, com o operador sabendo que o programa pode:
+
+- reservar uma grande quantidade de portas;
+- consumir buffers de sockets;
+- afetar navegadores e outros aplicativos;
+- continuar executando até receber `CTRL+C`.
+
+Para remover o comportamento de inicialização, exclua o atalho `PortExhaustion.lnk` da pasta de Inicializar do Windows ou da pasta de Inicialização do usuário. A função não remove atalhos existentes por conta própria.
+
+### Execução em segundo plano
+
+Atualmente, o script não é um aplicativo em segundo plano por padrão. Ele é executado em primeiro plano no terminal e mostra informações no console.
+
+Isso significa que:
+
+- uma janela do terminal permanece aberta;
+- o usuário pode acompanhar as mensagens exibidas;
+- `CTRL+C` pode encerrar o programa;
+- fechar a janela do terminal pode interromper o processo;
+- o Windows não cria um serviço do sistema automaticamente;
+- o programa não usa `pythonw.exe`, ocultação de janela ou um mecanismo de persistência.
+
+Somente tornar o executável invisível ou ocultar o terminal não é recomendado em um laboratório responsável. Um aplicativo em segundo plano precisa continuar visível no Gerenciador de Tarefas e ter uma forma conhecida de encerramento.
+
+Os sockets criados pelo processo pertencem ao processo do Python. Ao fechar o programa, o Windows normalmente libera esses recursos. A aplicação ainda deve implementar um bloqueio `finally` ou tratamento explícito de `KeyboardInterrupt` para fechar os sockets antes de encerrar, principalmente enquanto o processo estiver em desenvolvimento.

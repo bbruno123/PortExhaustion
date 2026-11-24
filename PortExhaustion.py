@@ -27,6 +27,7 @@ except:
 
 def detectar_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
     try:
         s.connect(("192.0.2.1", 80))
         return s.getsockname()[0]
@@ -36,28 +37,21 @@ def detectar_ip():
 ip = detectar_ip()
 sockets_abertos = []
 
-print(f"IP local detectado: {ip}")
-print("-" * 40)
+print("\033[2J\033[H", end="", flush=True)
+print(f"\033[1;1HIP local detectado: {ip}\033[K", end="", flush=True)
+print(f"\033[2;1H{'-' * 40}\033[K", end="", flush=True)
+print("\033[3;1H[TCP] Aguardando...\033[K", end="", flush=True)
+print("\033[4;1H[UDP] Aguardando...\033[K", end="", flush=True)
 
 porta = 1
 
+ultima_tcp = None
+ultima_udp = None
+
 while porta <= 65535:
-    try:
-        if porta % 100 == 0:
-           novo_ip = detectar_ip()
-
-           if novo_ip != ip:
-              ip = novo_ip
-              # print(f"IP atualizado: {ip}")
-
-              for sock in sockets_abertos:
-                 sock.close()
- 
-              sockets_abertos.clear()
-            
+    try:    
         # Socket TCP
         sock_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
         # Socket UDP
         sock_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -68,12 +62,11 @@ while porta <= 65535:
 
             sockets_abertos.append(sock_tcp)
 
-            # print(f"[OCUPADA PELO SCRIPT] Porta: {porta} | TCP")
+            ultima_tcp = porta
+            print(f"\033[3;1H[TCP] Ocupada: porta {ultima_tcp}\033[K", end="", flush=True)
 
         except OSError:
             sock_tcp.close()
-            # print(f"[INDISPONÍVEL] Porta: {porta} | TCP")
-
 
         # UDP
         try:
@@ -81,11 +74,11 @@ while porta <= 65535:
 
             sockets_abertos.append(sock_udp)
 
-            # print(f"[OCUPADA PELO SCRIPT] Porta: {porta} | UDP")
+            ultima_udp = porta
+            print(f"\033[4;1H[UDP] Ocupada: porta {ultima_udp}\033[K", end="", flush=True)
 
         except OSError:
             sock_udp.close()
-            # print(f"[INDISPONÍVEL] Porta: {porta} | UDP")
 
         if porta >= 65535:
             subprocess.run("cls", shell=True)
