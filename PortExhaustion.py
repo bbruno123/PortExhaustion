@@ -1,20 +1,20 @@
 import socket
 import subprocess
-import winshell
+import sys
 from win32com.client import Dispatch
 import os
 import time
 
 def iniciar_com_windows():
-    caminho_programa = os.path.abspath(__file__)
-    pasta_inicializar = winshell.startup()
-
-    atalho = os.path.join(pasta_inicializar, "PortExhaustion.lnk")
-
-    if os.path.exists(atalho):
-        return
+    caminho_programa = (
+        sys.executable if getattr(sys, "frozen", False)
+        else os.path.abspath(__file__)
+    )
 
     shell = Dispatch("WScript.Shell")
+    pasta_inicializar = shell.SpecialFolders("Startup")
+    atalho = os.path.join(pasta_inicializar, "PortExhaustion.lnk")
+
     shortcut = shell.CreateShortCut(atalho)
 
     shortcut.Targetpath = caminho_programa
