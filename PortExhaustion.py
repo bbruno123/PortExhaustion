@@ -19,7 +19,7 @@ def iniciar_com_windows():
 
     destino = os.path.join(
         pasta_inicializar,
-        PortExhaustion.exe"
+        "PortExhaustion.exe"
     )
 
     if caminho_programa.lower() != destino.lower():

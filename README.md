@@ -180,13 +180,12 @@ Os sockets criados pelo processo pertencem ao processo do Python. Ao fechar o pr
 
 ## Instalação das dependências
 
-As dependências externas foram listadas no arquivo `requirements.txt`:
+As dependências externas estão listadas em `requirements.txt`:
 
-- `winshell`: obtém a pasta de Inicializar do Windows usada pela função `iniciar_com_windows()`.
-- `pywin32`: fornece o módulo `win32com.client`, necessário para criar o atalho `.lnk`.
-- `pyinstaller`: usada opcionalmente para gerar o arquivo executável `.exe`.
+- `pywin32`: fornece `win32com.client.Dispatch`.
+- `pyinstaller`: opcional, usado somente para gerar um executável `.exe`.
 
-Os módulos `socket`, `subprocess`, `os` e `time` fazem parte da biblioteca padrão do Python e não precisam ser instalados separadamente.
+Os módulos `socket`, `subprocess`, `sys`, `os`, `time` e `shutil` fazem parte da biblioteca padrão do Python e não precisam ser instalados separadamente.
 
 No diretório do projeto, instale todas as dependências com:
 
@@ -195,8 +194,8 @@ python -m pip install --upgrade pip
 python -m pip install -r .\requirements.txt
 ```
 
-Se quiser executar o script diretamente e não gerar um `.exe`, a biblioteca `pyinstaller` não é obrigatória. Neste caso, instale apenas os módulos necessários ao início automático:
+Se quiser executar o script diretamente e não gerar um `.exe`, instale apenas a dependência de execução:
 
 ```powershell
-python -m pip install winshell pywin32
+python -m pip install pywin32
 ```
