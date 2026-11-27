@@ -4,6 +4,7 @@ import sys
 from win32com.client import Dispatch
 import os
 import time
+import shutil
 
 def iniciar_com_windows():
     caminho_programa = (
