@@ -6,6 +6,8 @@ Este projeto é um experimento controlado para estudar o comportamento do sistem
 
 **Use apenas em laboratório ou em uma máquina descartável sob seu controle.** O programa tenta reservar portas locais em grandes quantidades e pode interromper navegadores, jogos, serviços de rede, atualizações e outras aplicações.
 
+Ao ser executado, o script também tenta criar ou atualizar um atalho na pasta Inicializar do usuário. Depois disso, ele poderá iniciar novamente no próximo login do Windows e começar a rotina de reserva de portas.
+
 - Não execute em computadores de terceiros.
 - Não execute em servidores de produção.
 - Não utilize em redes corporativas ou públicas sem autorização explícita.
@@ -108,7 +110,7 @@ Um experimento seguro pode usar somente uma faixa pequena em uma máquina isolad
 O executável (`.exe`) do laboratório pode ser fornecido separadamente e não precisa ser compilado a partir deste repositório. Ele deve representar a mesma rotina de exaustão limitada a portas locais, ser identificado claramente e manter uma forma conhecida de encerramento.
 
 - A execução em segundo plano não substitui a necessidade de supervisão manual.
-- O `.exe` não deve ser instalado sem consentimento, iniciado automaticamente nem mantido após uma reinicialização.
+- O `.exe` não deve ser executado sem consentimento explícito. Como o script cria um atalho de inicialização, informe ao operador que ele poderá iniciar novamente no próximo login e explique como remover o atalho.
 - Não use mecanismos de evasão, persistência, nomes falsos ou dissimulação.
 - Antes da entrega, confirme que os participantes sabem qual processo está ativo e como encerrá-lo.
 - Registre o nome e o PID do processo para facilitar a interrupção pelo Gerenciador de Tarefas.
@@ -123,43 +125,20 @@ Antes da execução do `.exe`, confirme que os integrantes do laboratório sabem
 - Como encerrá-lo imediatamente.
 - Quanto tempo o teste poderá permanecer ativo.
 
-## Inicialização com o Windows e execução em segundo plano
+## Inicialização com o Windows
 
-O projeto possui a função `iniciar_com_windows()` para criar um atalho no diretório de inicialização do Windows.
+O script chama `iniciar_com_windows()` ao iniciar. A função usa `win32com.client.Dispatch` para acessar `WScript.Shell`, obtém a pasta `Startup` do usuário e salva nela o atalho `PortExhaustion.lnk`.
 
-Ela obtém o caminho absoluto do arquivo Python atual, consulta a pasta de inicialização do usuário por meio de `winshell.startup()` e cria um atalho chamado `PortExhaustion.lnk`. O atalho possui como destino o próprio arquivo Python e como diretório de trabalho a pasta do projeto.
+O destino depende de como o programa está sendo executado:
 
-O projeto chama essa função na inicialização para preparar o atalho:
+- Como script Python, o destino é o caminho absoluto de `PortExhaustion.py`.
+- Como executável congelado, o destino é `sys.executable`, ou seja, o próprio `.exe`.
 
-```python
-try:
-    iniciar_com_windows()
-except Exception as erro:
-    print(f"Não foi possível criar o atalho: {erro}")
-```
+O diretório de trabalho do atalho é a pasta do destino. Cada execução salva o atalho no mesmo caminho, atualizando-o; o código não verifica previamente se ele já existe. Se ocorrer um erro ao criar o atalho, a exceção é ignorada.
 
-Na primeira execução, o programa cria o atalho uma única vez. Nas próximas execuções, a função verifica se o atalho já existe e não cria outro.
+No próximo login do usuário, o Windows inicia o destino do atalho. Isso inicia também a rotina de detecção de IP e reserva de portas, que pode afetar a rede local e outros aplicativos até o processo ser encerrado. O script não oculta o terminal nem oferece duração automática.
 
-### O que o atalho faz
-
-Após criar o atalho, o Windows pode tentar iniciar o script quando o usuário fizer login. O atalho usa `os.path.abspath(__file__)` como destino e `os.path.dirname(caminho_programa)` como diretório de trabalho.
-
-Se a conexão de rede ainda não estiver pronta no login, o script aguarda a detecção de um IP local antes de começar a reservar portas. A espera não garante que a Internet esteja acessível; apenas aguarda o sistema disponibilizar um endereço IPv4 local não loopback.
-
-A função verifica primeiro se `PortExhaustion.lnk` já existe. Isso evita criar um novo atalho toda vez que o script executar.
-
-### Persistência e consentimento
-
-Criação automática de atalhos não deve ser ativada silenciosamente. Ela modifica o comportamento da conta do usuário e pode consumir recursos a cada login.
-
-Somente habilite `iniciar_com_windows()` em uma VM ou máquina controlada, com o operador sabendo que o programa pode:
-
-- reservar uma grande quantidade de portas;
-- consumir buffers de sockets;
-- afetar navegadores e outros aplicativos;
-- continuar executando até receber `CTRL+C`.
-
-Para remover o comportamento de inicialização, exclua o atalho `PortExhaustion.lnk` da pasta de Inicializar do Windows ou da pasta de Inicialização do usuário. A função não remove atalhos existentes por conta própria.
+Para desativar a inicialização, remova `PortExhaustion.lnk` da pasta Inicializar do usuário. Uma execução posterior do script tentará criar o atalho novamente.
 
 ### Execução em segundo plano
 
