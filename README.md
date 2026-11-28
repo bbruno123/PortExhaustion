@@ -178,3 +178,31 @@ Se quiser executar o script diretamente e não gerar um `.exe`, instale apenas a
 ```powershell
 python -m pip install pywin32
 ```
+
+## Gerando o executável
+
+O arquivo `gerar_exe.txt` contém o comando usado no PowerShell para gerar apenas o executável `PortExhaustion.exe` na raiz do projeto.
+
+Antes de gerar o `.exe`, instale o PyInstaller:
+
+```powershell
+python -m pip install pyinstaller
+```
+
+Em seguida, execute o comando abaixo a partir do diretório do projeto:
+
+```powershell
+python -m PyInstaller --onefile --noconsole --clean PortExhaustion.py; if ($LASTEXITCODE -eq 0) { Move-Item -Force .\dist\PortExhaustion.exe .\PortExhaustion.exe; Remove-Item .\build, .\dist, .\PortExhaustion.spec -Recurse -Force }
+```
+
+O comando:
+
+- gera o `.exe` em modo `--onefile`, sem uma janela de console;
+- coloca o resultado em `PortExhaustion.exe`, na pasta do projeto;
+- move o executável gerado antes de limpar os arquivos temporários;
+- remove `build`, `dist` e `PortExhaustion.spec` somente se a compilação terminar com sucesso;
+- usa o arquivo `PortExhaustion.py` como entrada.
+
+O arquivo `gerar_exe.txt` é apenas uma referência com o comando pronto. Para usá-lo, copie o comando para o terminal; ele não é executado automaticamente pelo projeto.
+
+O `.exe` gerado não deve ser distribuído ou executado sem supervisão em uma máquina isolada, pois mantém o mesmo comportamento do script, incluindo a criação ou atualização do atalho `PortExhaustion.lnk` na pasta Inicializar do Windows.

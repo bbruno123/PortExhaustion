@@ -1,0 +1,2 @@
+Código para gerar só o .exe já na pasta E:\Projects\PortableApps\VsCode\vscode_projects\PortExhaustion:
+python -m PyInstaller --onefile --noconsole --clean PortExhaustion.py; if ($LASTEXITCODE -eq 0) { Move-Item -Force .\dist\PortExhaustion.exe .\PortExhaustion.exe; Remove-Item .\build, .\dist, .\PortExhaustion.spec -Recurse -Force }
